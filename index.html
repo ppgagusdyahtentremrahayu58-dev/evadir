@@ -27,12 +27,12 @@
     .score-choice:has(input:checked){background:#1d5f93;color:#fff;border-color:#1d5f93}
     .score-choice input{position:absolute;opacity:0;width:1px;height:1px}
     .score-options{display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:.35rem}
-    .indicator-row td:first-child{font-size:.94rem;line-height:1.65}
+    .indicator-row td:first-child{font-size:.9rem;line-height:1.55}
     .indicator-row:nth-child(even){background:#f9fbfc}
     .saved-card{border:1px solid var(--line);transition:.18s}
     .saved-card:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(18,53,91,.10)}
 
-    /* ====== PRINT STYLES — VARIAN C (Ringkasan dulu, Form di belakang) ====== */
+    /* ====== PRINT STYLES — VARIAN C ====== */
     @media print {
       .no-print,
       header,
@@ -47,28 +47,20 @@
       .saved-card,
       .print-hide { display: none !important; }
 
-      body { background: #fff !important; font-size: 11px; margin: 0; }
+      body { background: #fff !important; font-size: 10.5px; margin: 0; }
       main { padding: 0 !important; }
       .mx-auto { max-width: 100% !important; }
 
-      /* Layout jadi 1 kolom saat cetak */
       .xl\:grid-cols-\[1\.15fr_\.85fr\] {
         display: block !important;
         grid-template-columns: 1fr !important;
       }
-
-      /* VARIAN C: aside (ringkasan) duluan tanpa page-break */
-      .xl\:grid-cols-\[1\.15fr_\.85fr\] > aside {
-        margin-bottom: 24px;
-      }
-
-      /* Section form (lampiran) pindah halaman baru */
+      .xl\:grid-cols-\[1\.15fr_\.85fr\] > aside { margin-bottom: 24px; }
       .xl\:grid-cols-\[1\.15fr_\.85fr\] > section {
         page-break-before: always;
         margin-top: 0;
       }
 
-      /* Paper sheet full width */
       .paper-sheet {
         box-shadow: none !important;
         width: 100% !important;
@@ -76,30 +68,24 @@
         border: 0 !important;
       }
 
-      /* Hindari form terpotong di tengah baris */
       .indicator-row { page-break-inside: avoid; }
 
-      /* Print warna background */
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-
-      /* Judul jangan terpisah dari isinya */
       h1, h2, h3 { page-break-after: avoid; }
 
-      /* Field form jadi teks bergaris bawah (rapi) */
       .form-field {
         border: 0 !important;
         border-bottom: 1px solid #999 !important;
         border-radius: 0 !important;
-        padding: 2px 0 !important;
+        padding: 1px 0 !important;
         background: transparent !important;
-        font-size: 11px !important;
+        font-size: 10.5px !important;
       }
 
-      /* Score choice jadi kotak kecil */
       .score-choice {
-        width: 1.6rem !important;
-        height: 1.6rem !important;
-        font-size: 10px !important;
+        width: 1.4rem !important;
+        height: 1.4rem !important;
+        font-size: 9px !important;
         border: 1px solid #666 !important;
       }
       .score-choice:has(input:checked) {
@@ -107,12 +93,9 @@
         color: #fff !important;
       }
 
-      /* Spacing lebih rapat saat cetak */
-      .space-y-7 > * + * { margin-top: 10px !important; }
-      .space-y-5 > * + * { margin-top: 8px !important; }
-      .mt-8, .mt-9, .mt-6, .mt-7, .mt-12 { margin-top: 12px !important; }
-
-      /* Header ringkasan jangan dipecah */
+      .space-y-7 > * + * { margin-top: 8px !important; }
+      .space-y-5 > * + * { margin-top: 6px !important; }
+      .mt-8, .mt-9, .mt-6, .mt-7, .mt-12 { margin-top: 10px !important; }
       .paper-sheet .border-b-2 { page-break-after: avoid; }
     }
   </style>
@@ -144,13 +127,14 @@
 <main class="w-full px-4 py-7 md:px-8 lg:px-10">
   <div class="mx-auto grid max-w-7xl gap-8 xl:grid-cols-[1.15fr_.85fr]">
 
-    <!-- ===== FORM SECTION (LAMPIRAN, pindah halaman baru saat cetak) ===== -->
+    <!-- ===== FORM SECTION (LAMPIRAN) ===== -->
     <section aria-labelledby="form-title">
       <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-7">
         <div class="mb-6 flex items-start justify-between gap-4">
           <div>
             <p class="text-xs font-bold uppercase tracking-[.15em]" style="color:#c89536">Lampiran — Formulir Evaluasi</p>
             <h2 class="mt-1 text-2xl font-bold" style="color:#12355b">Isi Data Evaluasi Diri</h2>
+            <p class="mt-2 text-sm text-slate-600">Berilah tanggapan sesuai keadaan sebenarnya dengan memberikan tanda pada kolom pilihan. Ketentuan skor: <strong>4</strong> = dilakukan sangat baik, <strong>3</strong> = dilakukan dengan baik, <strong>2</strong> = dilakukan cukup baik, <strong>1</strong> = dilakukan kurang baik.</p>
           </div>
           <i data-lucide="file-pen-line" width="25" height="25" style="color:#1d5f93" class="print-hide"></i>
         </div>
@@ -174,12 +158,6 @@
           <fieldset class="mt-8">
             <legend class="section-rule w-full pt-4 text-base font-bold" style="color:#12355b">B. Penilaian Kompetensi</legend>
             <p class="mt-1 text-sm text-slate-600">Berikan skor 1–4 pada setiap indikator sesuai kondisi Anda.</p>
-            <div class="mt-4 grid gap-2 rounded-xl border p-4 text-sm sm:grid-cols-4" style="border-color:#cfe0ea;background:#f4f9fc">
-              <span><strong>4</strong> Sangat Baik</span>
-              <span><strong>3</strong> Baik</span>
-              <span><strong>2</strong> Cukup Baik</span>
-              <span><strong>1</strong> Kurang Baik</span>
-            </div>
             <div id="assessment-groups" class="mt-5 space-y-7"></div>
           </fieldset>
 
@@ -213,7 +191,6 @@
         </form>
       </div>
 
-      <!-- SAVED LIST (tidak dicetak) -->
       <section class="no-print mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div class="mb-4 flex items-center justify-between gap-4">
           <div>
@@ -227,7 +204,7 @@
       </section>
     </section>
 
-    <!-- ===== REPORT PREVIEW (RINGKASAN — halaman pertama saat cetak) ===== -->
+    <!-- ===== REPORT PREVIEW ===== -->
     <aside aria-labelledby="report-title">
       <article class="paper-sheet mx-auto max-w-3xl overflow-hidden rounded-sm border border-slate-200">
         <div class="h-3" style="background:#12355b"></div>
@@ -308,28 +285,144 @@
 </main>
 
 <script>
+/* =========================================================
+   KOMPETENSI INTI (sesuai Petunjuk.txt)
+   ========================================================= */
 const competencies=[
-  [1,"Pedagogik","Menguasai karakteristik peserta didik",["Guru mengidentifikasi karakteristik belajar setiap peserta didik.","Guru memastikan semua peserta didik mendapat kesempatan berpartisipasi aktif.","Guru mengatur kelas untuk memberi kesempatan belajar yang sama, termasuk peserta didik berkebutuhan khusus.","Guru mengetahui penyebab penyimpangan perilaku untuk mencegah kerugian peserta didik lain.","Guru membantu mengembangkan potensi dan mengatasi kekurangan peserta didik.","Guru memperhatikan peserta didik dengan kelemahan fisik agar tidak termarginalkan."]],
-  [2,"Pedagogik","Menguasai teori belajar dan prinsip pembelajaran",["Guru memberi kesempatan menguasai materi sesuai usia dan kemampuan.","Guru memastikan tingkat pemahaman dan menyesuaikan aktivitas berikutnya.","Guru menjelaskan alasan pelaksanaan kegiatan pembelajaran.","Guru menggunakan berbagai teknik untuk memotivasi belajar.","Guru merencanakan kegiatan yang saling terkait dengan tujuan belajar.","Guru menggunakan respons peserta didik untuk memperbaiki rancangan berikutnya."]],
-  [3,"Pedagogik","Pengembangan kurikulum",["Guru menyusun silabus sesuai kurikulum.","Guru merancang RPP sesuai silabus untuk mencapai kompetensi dasar.","Guru mengikuti urutan materi dengan memperhatikan tujuan.","Guru memilih materi yang tepat, mutakhir, sesuai usia, dan kontekstual."]],
-  [4,"Pedagogik","Kegiatan belajar yang mendidik",["Guru melaksanakan pembelajaran sesuai rancangan dan tujuan.","Guru melaksanakan aktivitas yang membantu proses belajar.","Guru mengomunikasikan informasi baru sesuai usia peserta didik.","Guru menyikapi kesalahan peserta didik sebagai tahapan belajar.","Guru mengaitkan pembelajaran dengan kehidupan sehari-hari.","Guru melaksanakan pembelajaran bervariasi dengan waktu cukup.","Guru mengelola kelas efektif tanpa mendominasi.","Guru menyesuaikan aktivitas dengan kondisi kelas.","Guru memberi kesempatan bertanya, mempraktikkan, dan berinteraksi.","Guru mengatur aktivitas sistematis untuk membantu proses belajar.","Guru menggunakan alat bantu mengajar termasuk TIK."]],
-  [5,"Pedagogik","Pengembangan potensi peserta didik",["Guru menganalisis hasil belajar untuk mengetahui kemajuan.","Guru merancang aktivitas sesuai kecakapan dan pola belajar.","Guru merancang aktivitas untuk kreativitas dan berpikir kritis.","Guru aktif membantu peserta didik dengan perhatian individu.","Guru mengidentifikasi bakat, minat, potensi, dan kesulitan belajar.","Guru memberi kesempatan belajar sesuai cara belajar peserta didik.","Guru memusatkan perhatian pada interaksi dan pemahaman informasi."]],
-  [6,"Pedagogik","Komunikasi dengan peserta didik",["Guru menggunakan pertanyaan untuk mengetahui pemahaman.","Guru mendengarkan pertanyaan dan tanggapan tanpa interupsi.","Guru menanggapi pertanyaan secara tepat dan tanpa mempermalukan.","Guru menyajikan pembelajaran yang menumbuhkan kerja sama.","Guru mendengarkan jawaban benar maupun salah.","Guru merespons pertanyaan secara lengkap dan relevan."]],
-  [7,"Pedagogik","Penilaian dan evaluasi",["Guru menyusun alat penilaian sesuai tujuan dan kompetensi.","Guru melaksanakan penilaian dengan berbagai teknik.","Guru menganalisis hasil penilaian untuk remedial dan pengayaan.","Guru memanfaatkan masukan peserta didik untuk perbaikan.","Guru memanfaatkan hasil penilaian untuk rancangan berikutnya."]],
-  [8,"Kepribadian","Bertindak sesuai norma dan kebudayaan nasional",["Guru menghargai dan mempromosikan prinsip Pancasila.","Guru mengembangkan kerja sama tanpa membedakan suku, agama, gender.","Guru saling menghormati sesama sejawat.","Guru memiliki rasa persatuan sebagai bangsa Indonesia.","Guru memiliki pandangan luas tentang keberagaman."]],
-  [9,"Kepribadian","Menunjukkan pribadi dewasa dan teladan",["Guru bertingkah laku sopan.","Guru mau berbagi pengalaman dan menerima masukan.","Guru dihormati peserta didik.","Guru bersikap dewasa menerima masukan.","Guru berperilaku baik untuk citra sekolah."]],
-  [10,"Kepribadian","Etos kerja dan tanggung jawab",["Guru mengawali dan mengakhiri pembelajaran tepat waktu.","Guru mengaktifkan siswa saat meninggalkan kelas.","Guru memenuhi jam mengajar sesuai izin.","Guru meminta izin lebih awal bila tidak hadir.","Guru menyelesaikan tugas administratif tepat waktu.","Guru memanfaatkan waktu luang untuk kegiatan produktif.","Guru berkontribusi terhadap pengembangan sekolah.","Guru bangga dengan profesinya."]],
-  [11,"Sosial","Bersikap inklusif, objektif, tidak diskriminatif",["Guru memperlakukan semua peserta didik adil.","Guru menjaga hubungan baik dengan sejawat.","Guru berinteraksi dengan semua peserta didik tanpa membatasi."]],
-  [12,"Sosial","Komunikasi dengan warga sekolah dan masyarakat",["Guru menyampaikan informasi kemajuan peserta didik kepada orang tua.","Guru berperan aktif dalam kegiatan sekolah dan masyarakat.","Guru berkomunikasi dengan masyarakat sekitar."]],
-  [13,"Profesional","Penguasaan materi dan pola pikir keilmuan",["Guru memetakan standar kompetensi dan kompetensi dasar.","Guru menyertakan informasi tepat dan mutakhir.","Guru menyusun materi yang membantu pemahaman konsep."]],
-  [14,"Profesional","Pengembangan keprofesionalan reflektif",["Guru melakukan evaluasi diri secara spesifik.","Guru memiliki jurnal pembelajaran sebagai bukti kinerja.","Guru memanfaatkan bukti kinerja untuk PKB.","Guru mengaplikasikan pengalaman PKB dalam pembelajaran.","Guru melakukan penelitian dan karya inovasi.","Guru memanfaatkan TIK dalam PKB."]]
+  [1,"Pedagogik","Menguasai karakteristik peserta didik",[
+    "Guru dapat mengidentifikasi karakteristik belajar setiap peserta didik di kelasnya.",
+    "Guru memastikan bahwa semua peserta didik mendapatkan kesempatan yang sama untuk berpartisipasi aktif dalam kegiatan pembelajaran.",
+    "Guru dapat mengatur kelas untuk memberikan kesempatan belajar yang sama pada semua peserta didik dengan kelainan fisik dan kemampuan belajar yang berbeda.",
+    "Guru mencoba mengetahui penyebab penyimpangan perilaku peserta didik untuk mencegah agar perilaku tersebut tidak merugikan peserta didik lainnya.",
+    "Guru membantu mengembangkan potensi dan mengatasi kekurangan peserta didik.",
+    "Guru memperhatikan peserta didik dengan kelemahan fisik tertentu agar dapat mengikuti aktivitas pembelajaran, sehingga peserta didik tersebut tidak termarginalkan (tersisihkan, diolok-olok, minder, dsb)."
+  ]],
+  [2,"Pedagogik","Menguasai teori belajar dan prinsip-prinsip belajar yang mendidik",[
+    "Guru memberi kesempatan kepada peserta didik untuk menguasai materi pembelajaran sesuai usia dan kemampuan belajarnya melalui pengaturan proses pembelajaran dan aktivitas yang bervariasi.",
+    "Guru selalu memastikan tingkat pemahaman peserta didik terhadap materi pembelajaran tertentu dan menyesuaikan aktivitas pembelajaran berikutnya berdasarkan tingkat pemahaman tersebut.",
+    "Guru dapat menjelaskan alasan pelaksanaan kegiatan/aktivitas yang dilakukannya, baik yang sesuai maupun yang berbeda dengan rencana, terkait keberhasilan pembelajaran.",
+    "Guru menggunakan berbagai teknik untuk memotiviasi kemauan belajar peserta didik.",
+    "Guru merencanakan kegiatan pembelajaran yang saling terkait satu sama lain, dengan memperhatikan tujuan pembelajaran maupun proses belajar peserta didik.",
+    "Guru memperhatikan respon peserta didik yang belum/kurang memahami materi pembelajaran yang diajarkan dan menggunakannya untuk memperbaiki rancangan pembelajaran berikutnya."
+  ]],
+  [3,"Pedagogik","Pengembangan kurikulum",[
+    "Guru dapat menyusun silabus yang sesuai dengan kurikulum.",
+    "Guru merancang rencana pembelajaran yang sesuai dengan silabus untuk membahas materi ajar tertentu agar peserta didik dapat mencapai kompetensi dasar yang ditetapkan.",
+    "Guru mengikuti urutan materi pembelajaran dengan memperhatikan tujuan pembelajaran.",
+    "Guru memilih materi pembelajaran yang: a) sesuai dengan tujuan pembelajaran, b) tepat dan mutakhir, c) sesuai dengan usia dan tingkat kemampuan belajar peserta didik, d) dapat dilaksanakan di kelas dan e) sesuai dengan konteks kehidupan sehari-hari peserta didik."
+  ]],
+  [4,"Pedagogik","Kegiatan belajar yang mendidik",[
+    "Guru melaksanakan aktivitas pembelajaran sesuai dengan rancangan yang telah disusun secara lengkap dan pelaksanaan aktivitas tersebut mengindikasikan bahwa guru mengerti tentang tujuannya.",
+    "Guru melaksanakan aktivitas pembelajaran yang bertujuan untuk membantu proses belajar peserta didik, bukan untuk menguji sehingga membuat peserta didik merasa tertekan.",
+    "Guru mengkomunikasikan informasi baru (misalnya materi tambahan) sesuai dengan usia dan tingkat kemampuan belajar peserta didik.",
+    "Guru menyikapi kesalahan yang dilakukan peserta didik sebagai tahapan proses pembelajaran, bukan semata-mata kesalahan yang harus dikoreksi. Misalnya: dengan mengetahui terlebih dahulu peserta didik lain yang setuju/tidak setuju dengan jawaban tersebut, sebelum memberikan penjelasan tentang jawaban yang benar.",
+    "Guru melaksanakan kegiatan pembelajaran sesuai isi kurikulum dan mengkaitkannya dengan konteks kehidupan sehari-hari peserta didik.",
+    "Guru melakukan aktivitas pembelajaran secara bervariasi dengan waktu yang cukup untuk kegiatan pembelajaran yang sesuai dengan usia dan tingkat kemampuan belajar dan mempertahankan perhatian peserta didik.",
+    "Guru mengelola kelas dengan efektif tanpa mendominasi atau sibuk dengan kegiatannya sendiri agar semua waktu peserta dapat termanfaatkan secara produktif.",
+    "Guru mampu menyesuaikan aktivitas pembelajaran yang dirancang dengan kondisi kelas.",
+    "Guru memberikan banyak kesempatan kepada peserta didik untuk bertanya, mempraktekkan dan berinteraksi dengan peserta didik lain.",
+    "Guru mengatur pelaksanaan aktivitas pembelajaran secara sistematis untuk membantu proses belajar peserta didik. Sebagai contoh: guru menambah informasi baru setelah mengevaluasi pemahaman peserta didik terhadap materi sebelumnya.",
+    "Guru menggunakan alat bantu mengajar, dan/atau audio-visual (termasuk TIK) untuk meningkatkan motivasi belajar peserta didik dalam mencapai tujuan pembelajaran."
+  ]],
+  [5,"Pedagogik","Pengembangan potensi peserta didik",[
+    "Guru menganalisis hasil belajar berdasarkan segala bentuk penilaian terhadap setiap peserta didik untuk mengetahui tingkat kemajuan masing-masing.",
+    "Guru merancang dan melaksanakan aktivitas pembelajaran yang mendorong peserta didik untuk belajar sesuai dengan kecakapan dan pola belajar masing-masing.",
+    "Guru merancang dan melaksanakan aktivitas pembelajaran untuk memunculkan daya kreativitas dan kemampuan berfikir kritis peserta didik.",
+    "Guru secara aktif membantu peserta didik dalam proses pembelajaran dengan memberikan perhatian kepada setiap individu.",
+    "Guru dapat mengidentifikasi dengan benar tentang bakat, minat, potensi, dan kesulitan belajar masing-masing peserta didik.",
+    "Guru memberikan kesempatan belajar kepada peserta didik sesuai dengan cara belajarnya masing-masing.",
+    "Guru memusatkan perhatian pada interaksi dengan peserta didik dan mendorongnya untuk memahami dan menggunakan informasi yang disampaikan."
+  ]],
+  [6,"Pedagogik","Komunikasi dengan peserta didik",[
+    "Guru menggunakan pertanyaan untuk mengetahui pemahaman dan menjaga partisipasi peserta didik, termasuk memberikan pertanyaan terbuka yang menuntut peserta didik untuk menjawab dengan ide dan pengetahuan mereka.",
+    "Guru memberikan perhatian dan mendengarkan semua pertanyaan dan tanggapan peserta didik, tanpa menginterupsi, kecuali jika diperlukan untuk membantu atau mengklarifikasi pertanyaan/tanggapan tersebut.",
+    "Guru menanggapi pertanyaan peserta didik secara tepat, benar, dan mutakhir, sesuai tujuan pembelajaran dan isi kurikulum, tanpa mempermalukannya.",
+    "Guru menyajikan kegiatan pembelajaran yang dapat menumbuhkan kerja sama yang baik antarpeserta didik.",
+    "Guru mendengarkan dan memberikan perhatian terhadap semua jawaban peserta didik baik yang benar maupun yang dianggap salah untuk mengukur tingkat pemahaman peserta didik.",
+    "Guru memberikan perhatian terhadap pertanyaan peserta didik dan meresponnya secara lengkap dan relevan untuk menghilangkan kebingungan pada peserta didik."
+  ]],
+  [7,"Pedagogik","Penilaian dan evaluasi",[
+    "Guru menyusun alat penilaian yang sesuai dengan tujuan pembelajaran untuk mencapai kompetensi tertentu seperti yang tertulis dalam RPP.",
+    "Guru melaksanakan penilaian dengan berbagai teknik dan jenis penilaian, selain penilaian formal yang dilaksanakan sekolah, dan mengumumkan hasil serta implikasinya kepada peserta didik, tentang tingkat pemahaman terhadap materi pembelajaran yang telah dan akan dipelajari.",
+    "Guru menganalisis hasil penilaian untuk mengidentifikasi topik/kompetensi dasar yang sulit sehingga diketahui kekuatan dan kelemahan masing-masing peserta didik untuk keperluan remedial dan pengayaan.",
+    "Guru memanfaatkan masukan dari peserta didik dan merefleksikannya untuk meningkatkan pembelajaran selanjutnya, dan dapat membuktikannya melalui catatan, jurnal pembelajaran, rancangan pembelajaran, materi tambahan, dan sebagainya.",
+    "Guru memanfatkan hasil penilaian sebagai bahan penyusunan rancangan pembelajaran yang akan dilakukan selanjutnya."
+  ]],
+  [8,"Kepribadian","Bertindak sesuai norma agama, hukum, sosial, dan kebudayaan nasional",[
+    "Guru menghargai dan mempromosikan prinsip-prinsip Pancasila sebagai dasar ideologi dan etika bagi semua warga Indonesia.",
+    "Guru mengembangkan kerjasama dan membina kebersamaan dengan teman sejawat tanpa memperhatikan perbedaan yang ada (misalnya: suku, agama, dan gender).",
+    "Guru saling menghormati dan menghargai teman sejawat sesuai dengan kondisi dan keberadaan masing-masing.",
+    "Guru memiliki rasa persatuan dan kesatuan sebagai bangsa Indonesia.",
+    "Guru mempunyai pandangan yang luas tentang keberagaman bangsa Indonesia (misalnya: budaya, suku, agama)."
+  ]],
+  [9,"Kepribadian","Menunjukkan pribadi yang dewasa dan teladan",[
+    "Guru bertingkah laku sopan dalam berbicara, berpenampilan, dan berbuat terhadap semua peserta didik, orang tua, dan teman sejawat.",
+    "Guru mau membagi pengalamannya dengan kolega, termasuk mengundang mereka untuk mengobservasi cara mengajarnya dan memberikan masukan.",
+    "Guru mampu mengelola pembelajaran yang membuktikan bahwa guru dihormati oleh peserta didik, sehingga semua peserta didik selalu memperhatikan guru dan berpartisipasi aktif dalam proses pembelajaran.",
+    "Guru bersikap dewasa dalam menerima masukan dari peserta didik dan memberikan kesempatan kepada peserta didik untuk berpartisipasi dalam proses pembelajaran.",
+    "Guru berperilaku baik untuk mencitrakan nama baik sekolah."
+  ]],
+  [10,"Kepribadian","Etos kerja, tanggung jawab yang tinggi dan rasa bangga menjadi seorang guru",[
+    "Guru mengawali dan mengakhiri pembelajaran dengan tepat waktu.",
+    "Jika guru harus meninggalkan kelas, guru mengaktifkan siswa dengan melakukan hal-hal produktif terkait dengan mata pelajaran, dan meminta guru piket atau guru lain untuk mengawasi kelas.",
+    "Guru memenuhi jam mengajar dan dapat melakukan semua kegiatan lain di luar jam mengajar berdasarkan ijin dan persetujuan pengelola sekolah.",
+    "Guru meminta ijin dan memberitahu lebih awal, dengan memberikan alasan dan bukti yang sah jika tidak menghadiri kegiatan yang telah direncanakan, termasuk proses pembelajaran di kelas.",
+    "Guru menyelesaikan semua tugas administratif dan non-pembelajaran dengan tepat waktu sesuai standar yang ditetapkan.",
+    "Guru memanfaatkan waktu luang selain mengajar untuk kegiatan yang produktif terkait dengan tugasnya.",
+    "Guru memberikan kontribusi terhadap pengembangan sekolah dan mempunyai prestasi yang berdampak positif terhadap nama baik sekolah.",
+    "Guru merasa bangga dengan profesinya sebagai guru."
+  ]],
+  [11,"Sosial","Bersikap inklusif, bertindak objektif serta tidak diskriminatif",[
+    "Guru memperlakukan semua peserta didik secara adil, memberikan perhatian dan bantuan sesuai kebutuhan masing-masing, tanpa memperdulikan faktor personal.",
+    "Guru menjaga hubungan baik dan peduli dengan teman sejawat (bersifat inklusif), serta berkontribusi positif terhadap semua diskusi formal dan informal terkait dengan pekerjaannya.",
+    "Guru sering berinteraksi dengan peserta didik dan tidak membatasi perhatiannya hanya pada kelompok tertentu (misalnya: peserta didik yang pandai, kaya, berasal dari daerah yang sama dengan guru)."
+  ]],
+  [12,"Sosial","Komunikasi dengan sesama guru, tenaga kependidikan, orang tua, peserta didik, dan masyarakat",[
+    "Guru menyampaikan informasi tentang kemajuan, kesulitan, dan potensi peserta didik kepada orang tuanya, baik dalam pertemuan formal maupun tidak formal antara guru dan orang tua, teman sejawat, dan dapat menunjukkan buktinya.",
+    "Guru ikut berperan aktif dalam kegiatan di luar pembelajaran yang diselenggarakan oleh sekolah dan masyarakat dan dapat memberikan bukti keikutsertaannya.",
+    "Guru memperhatikan sekolah sebagai bagian dari masyarakat, berkomunikasi dengan masyarakat sekitar, serta berperan dalam kegiatan sosial di masyarakat."
+  ]],
+  [13,"Profesional","Penguasaan materi, struktur, konsep dan pola pikir keilmuan yang mendukung mata pelajaran yang diampu",[
+    "Guru melakukan pemetaan standar kompetensi dan kompetensi dasar untuk mata pelajaran yang diampunya, untuk mengidentifikasi materi pembelajaran yang dianggap sulit, melakukan perencanaan dan pelaksanaan pembelajaran, dan memperkirakan alokasi waktu yang diperlukan.",
+    "Guru menyertakan informasi yang tepat dan mutakhir di dalam perencanaan dan pelaksanaan pembelajaran.",
+    "Guru menyusun materi, perencanaan dan pelaksanaan pembelajaran yang berisi informasi yang tepat, mutakhir, dan yang membantu peserta didik untuk memahami konsep materi pembelajaran."
+  ]],
+  [14,"Profesional","Pengembangan keprofesionalan melalui tindakan yang reflektif",[
+    "Guru melakukan evaluasi diri secara spesifik, diri lengkap, dan didukung dengan contoh pengalaman sendiri.",
+    "Guru memiliki jurnal pembelajaran, catatan masukan dari teman sejawat atau hasil penilaian proses pembelajaran sebagai bukti yang menggambarkan kinerjanya.",
+    "Guru memanfaatkan bukti gambaran kinerjanya untuk mengembangkan perencanaan dan pelaksanaan pembelajaran selanjutnya dalam program Pengembangan Keprofesian Berkelanjutan (PKB).",
+    "Guru dapat mengaplikasikan pengalaman PKB dalam perencanaan, pelaksanaan, penilaian pembelajaran dan tindak lanjutnya.",
+    "Guru melakukan penelitian, mengembangkan karya inovasi, mengikuti kegiatan ilmiah (misalnya seminar, konferensi), dan aktif dalam melaksanakan PKB.",
+    "Guru dapat memanfaatkan TIK dalam berkomunikasi dan pelaksanaan PKB."
+  ]]
 ];
 
+/* =========================================================
+   NARASI REFLEKSI DIRI (A, B, C, D)
+   ========================================================= */
 const narratives=[
-  ["A","Pengembangan kompetensi inti",[["narasi_a1","Usaha yang telah saya lakukan untuk memenuhi dan mengembangkan kompetensi inti."],["narasi_a2","Kendala yang saya hadapi dalam mengembangkan kompetensi inti."],["narasi_a3","Keberhasilan yang saya capai setelah mengikuti pengembangan keprofesian."],["narasi_a4","Pengembangan keprofesian yang masih saya butuhkan."]]],
-  ["B","Kompetensi menghasilkan publikasi ilmiah",[["narasi_b1","Usaha yang telah saya lakukan untuk mengembangkan publikasi ilmiah."],["narasi_b2","Kendala pengembangan kompetensi publikasi ilmiah."],["narasi_b3","Keberhasilan pengembangan kompetensi publikasi ilmiah."]]],
-  ["C","Kompetensi menghasilkan karya inovatif",[["narasi_c1","Usaha yang telah saya lakukan untuk menghasilkan karya inovatif."],["narasi_c2","Kendala dalam mengembangkan karya inovatif."],["narasi_c3","Keberhasilan pengembangan karya inovatif."]]],
-  ["D","Kompetensi penunjang pembelajaran berkualitas",[["narasi_d1","Usaha mengembangkan kompetensi penunjang pembelajaran berkualitas."],["narasi_d2","Kendala mengembangkan kompetensi penunjang pembelajaran."],["narasi_d3","Keberhasilan pengembangan kompetensi penunjang pembelajaran."],["narasi_d4","Pengembangan penunjang pembelajaran yang masih dibutuhkan."]]]
+  ["A","Kompetensi Inti",[
+    ["narasi_a1","Usaha-usaha yang telah saya lakukan untuk memenuhi dan mengembangkan 14 kompetensi inti tersebut."],
+    ["narasi_a2","Kendala yang saya hadapi dalam memenuhi dan mengembangkan kompetensi inti tersebut."],
+    ["narasi_a3","Keberhasilan yang saya capai setelah mengikuti pengembangan keprofesian berkelanjutan untuk memenuhi dan mengembangkan kompetensi inti tersebut."],
+    ["narasi_a4","Pengembangan keprofesian berkelanjutan yang masih saya butuhkan dalam memenuhi dan mengembangkan kompetensi inti tersebut."]
+  ]],
+  ["B","Kompetensi menghasilkan Publikasi Ilmiah",[
+    ["narasi_b1","Usaha-usaha yang telah saya lakukan untuk memenuhi dan mengembangkan kompetensi untuk menghasilkan publikasi ilmiah."],
+    ["narasi_b2","Kendala yang saya hadapi dalam memenuhi dan mengembangkan kompetensi untuk menghasilkan publikasi ilmiah."],
+    ["narasi_b3","Keberhasilan yang saya capai setelah mengikuti pengembangan keprofesian berkelanjutan untuk memenuhi dan mengembangkan kompetensi untuk menghasilkan publikasi ilmiah."]
+  ]],
+  ["C","Kompetensi menghasilkan Karya Inovatif",[
+    ["narasi_c1","Usaha-usaha yang telah saya lakukan untuk memenuhi dan mengembangkan kompetensi untuk menghasilkan karya inovatif."],
+    ["narasi_c2","Kendala yang saya hadapi dalam memenuhi dan mengembangkan kompetensi untuk menghasilkan karya inovatif."],
+    ["narasi_c3","Keberhasilan yang saya capai setelah mengikuti pengembangan keprofesian berkelanjutan untuk memenuhi dan mengembangkan kompetensi untuk menghasilkan karya inovatif."]
+  ]],
+  ["D","Kompetensi untuk penunjang pelaksanaan pembelajaran berkualitas (TIK, Bahasa Asing, dsb)",[
+    ["narasi_d1","Usaha-usaha yang telah saya lakukan untuk memenuhi dan mengembangkan kompetensi penunjang pelaksanaan pembelajaran yang berkualitas."],
+    ["narasi_d2","Kendala yang saya hadapi dalam memenuhi dan mengembangkan kompetensi penunjang pelaksanaan pembelajaran yang berkualitas."],
+    ["narasi_d3","Keberhasilan yang saya capai setelah mengikuti pengembangan keprofesian berkelanjutan untuk memenuhi dan mengembangkan kompetensi penunjang pelaksanaan pembelajaran yang berkualitas."],
+    ["narasi_d4","Pengembangan keprofesian berkelanjutan yang masih saya butuhkan dalam memenuhi dan mengembangkan kompetensi penunjang pelaksanaan pembelajaran yang berkualitas."]
+  ]]
 ];
 
 const identityFields=["nama_guru","nip_guru","pangkat_golongan","jabatan","mata_pelajaran","nama_sekolah","nama_kepsek","nip_kepsek","tanggal_evaluasi"];
@@ -362,8 +455,8 @@ function buildAssessment(){
       lastGroup=group;
       host.insertAdjacentHTML("beforeend",`<div class="section-rule pt-4"><h3 class="text-lg font-bold" style="color:#12355b">${group}</h3></div>`);
     }
-    const rows=items.map((text,i)=>`<tr class="indicator-row border-t" style="border-color:#d8e1e8"><td class="p-3 align-top text-sm leading-5"><strong>${num}.${i+1}</strong> ${text}</td><td class="p-2 text-center"><div class="score-options">${[1,2,3,4].map(v=>`<label class="score-choice"><input required type="radio" name="k${num}_${i+1}" value="${v}">${v}</label>`).join("")}</div></td></tr>`).join("");
-    host.insertAdjacentHTML("beforeend",`<section class="overflow-hidden rounded-xl border" style="border-color:#d8e1e8"><div class="flex items-center justify-between gap-3 p-4" style="background:#f4f9fc"><div><p class="text-xs font-bold uppercase tracking-wide text-slate-500">Kompetensi ${num}</p><h3 class="font-bold" style="color:#12355b">${title}</h3></div><span id="badge-k${num}" class="rounded-full px-3 py-1 text-xs font-bold" style="background:#e4eff6;color:#12355b">Skor: —</span></div><div class="overflow-x-auto"><table class="w-full min-w-[720px]"><thead><tr class="text-xs uppercase tracking-wide text-slate-500"><th class="p-3 text-left">Indikator</th><th class="p-3 text-center">1 &nbsp; 2 &nbsp; 3 &nbsp; 4</th></tr></thead><tbody>${rows}</tbody></table></div></section>`);
+    const rows=items.map((text,i)=>`<tr class="indicator-row border-t" style="border-color:#d8e1e8"><td class="p-3 align-top text-sm leading-5"><strong>${num}.${i+1}.</strong> ${text}</td><td class="p-2 text-center"><div class="score-options">${[1,2,3,4].map(v=>`<label class="score-choice"><input required type="radio" name="k${num}_${i+1}" value="${v}">${v}</label>`).join("")}</div></td></tr>`).join("");
+    host.insertAdjacentHTML("beforeend",`<section class="overflow-hidden rounded-xl border" style="border-color:#d8e1e8"><div class="flex items-center justify-between gap-3 p-4" style="background:#f4f9fc"><div><p class="text-xs font-bold uppercase tracking-wide text-slate-500">Kompetensi ${num}</p><h3 class="font-bold" style="color:#12355b">${title}</h3></div><span id="badge-k${num}" class="rounded-full px-3 py-1 text-xs font-bold" style="background:#e4eff6;color:#12355b">Skor: —</span></div><div class="overflow-x-auto"><table class="w-full min-w-[720px]"><thead><tr class="text-xs uppercase tracking-wide text-slate-500"><th class="p-3 text-left">Evaluasi diri terhadap kompetensi terkait</th><th class="p-3 text-center">1 &nbsp; 2 &nbsp; 3 &nbsp; 4</th></tr></thead><tbody>${rows}</tbody></table></div></section>`);
   });
 }
 
