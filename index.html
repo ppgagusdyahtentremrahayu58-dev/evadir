@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evaluasi Diri Guru — Evadir</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+
+  <script>
+    // URL Web App Apps Script Anda
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-XjL2o-7YOfOv8dmscS19h1YPNR-71NXZ6CSiTa-Y5DYwL0wUkB9WqgbF2Qe26C0S/exec";
+  </script>
+
+  <style>
+    :root{--navy:#12355b;--blue:#1d5f93;--paper:#fffdfa;--ink:#193247;--line:#d8e1e8;--mist:#edf3f7;--gold:#c89536}
+    *{box-sizing:border-box}
+    body{font-family:"DM Sans",sans-serif;color:var(--ink);background:#f4f7fa;margin:0}
+    .serif{font-family:"Source Serif 4",serif}
+    .paper-sheet{background:var(--paper);box-shadow:0 18px 44px rgba(18,53,91,.16)}
+    .form-field{width:100%;border:1px solid #c8d5df;border-radius:.65rem;background:#fff;padding:.65rem .75rem;font-size:.9rem;color:var(--ink);outline:none;transition:.2s}
+    .form-field:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(29,95,147,.14)}
+    .field-label{display:block;font-size:.75rem;font-weight:700;letter-spacing:.045em;color:#476176;margin-bottom:.35rem;text-transform:uppercase}
+    .section-rule{border-top:2px solid var(--blue)}
+    .score-choice{position:relative;display:inline-flex;align-items:center;justify-content:center;width:2.35rem;height:2.35rem;border:1px solid #c8d5df;border-radius:.55rem;cursor:pointer;font-weight:700;transition:.15s;background:#fff}
+    .score-choice:hover{border-color:var(--blue)}
+    .score-choice:has(input:checked){background:#1d5f93;color:#fff;border-color:#1d5f93}
+    .score-choice input{position:absolute;opacity:0;width:1px;height:1px}
+    .score-options{display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:.35rem}
+    .indicator-row td:first-child{font-size:.94rem;line-height:1.65}
+    .indicator-row:nth-child(even){background:#f9fbfc}
+    .saved-card{border:1px solid var(--line);transition:.18s}
+    .saved-card:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(18,53,91,.10)}
+
+    /* ====== PRINT STYLES — VARIAN C (Ringkasan dulu, Form di belakang) ====== */
+    @media print {
+      .no-print,
+      header,
+      #sheet-badge,
+      #form-status,
+      #load-state,
+      #refresh-button,
+      #save-button,
+      #print-report,
+      #saved-list,
+      #record-count,
+      .saved-card,
+      .print-hide { display: none !important; }
+
+      body { background: #fff !important; font-size: 11px; margin: 0; }
+      main { padding: 0 !important; }
+      .mx-auto { max-width: 100% !important; }
+
+      /* Layout jadi 1 kolom saat cetak */
+      .xl\:grid-cols-\[1\.15fr_\.85fr\] {
+        display: block !important;
+        grid-template-columns: 1fr !important;
+      }
+
+      /* VARIAN C: aside (ringkasan) duluan tanpa page-break */
+      .xl\:grid-cols-\[1\.15fr_\.85fr\] > aside {
+        margin-bottom: 24px;
+      }
+
+      /* Section form (lampiran) pindah halaman baru */
+      .xl\:grid-cols-\[1\.15fr_\.85fr\] > section {
+        page-break-before: always;
+        margin-top: 0;
+      }
+
+      /* Paper sheet full width */
+      .paper-sheet {
+        box-shadow: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        border: 0 !important;
+      }
+
+      /* Hindari form terpotong di tengah baris */
+      .indicator-row { page-break-inside: avoid; }
+
+      /* Print warna background */
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+      /* Judul jangan terpisah dari isinya */
+      h1, h2, h3 { page-break-after: avoid; }
+
+      /* Field form jadi teks bergaris bawah (rapi) */
+      .form-field {
+        border: 0 !important;
+        border-bottom: 1px solid #999 !important;
+        border-radius: 0 !important;
+        padding: 2px 0 !important;
+        background: transparent !important;
+        font-size: 11px !important;
+      }
+
+      /* Score choice jadi kotak kecil */
+      .score-choice {
+        width: 1.6rem !important;
+        height: 1.6rem !important;
+        font-size: 10px !important;
+        border: 1px solid #666 !important;
+      }
+      .score-choice:has(input:checked) {
+        background: #1d5f93 !important;
+        color: #fff !important;
+      }
+
+      /* Spacing lebih rapat saat cetak */
+      .space-y-7 > * + * { margin-top: 10px !important; }
+      .space-y-5 > * + * { margin-top: 8px !important; }
+      .mt-8, .mt-9, .mt-6, .mt-7, .mt-12 { margin-top: 12px !important; }
+
+      /* Header ringkasan jangan dipecah */
+      .paper-sheet .border-b-2 { page-break-after: avoid; }
+    }
+  </style>
+
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.577.0/dist/umd/lucide.min.js"></script>
+</head>
+
+<body class="w-full min-h-screen">
+
+<header class="no-print border-b-4 bg-white px-5 py-5 md:px-10" style="border-color:#c89536">
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-5">
+    <div class="flex items-center gap-4">
+      <div class="flex h-12 w-12 items-center justify-center rounded-full text-white" style="background:#12355b">
+        <i data-lucide="clipboard-check" width="25" height="25"></i>
+      </div>
+      <div>
+        <p class="text-xs font-bold uppercase tracking-[.18em]" style="color:#c89536">Evaluasi Diri Guru</p>
+        <h1 class="serif text-2xl font-bold md:text-3xl" style="color:#12355b">Evadir — Penilaian Kompetensi</h1>
+      </div>
+    </div>
+    <div id="sheet-badge" class="no-print hidden items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold sm:flex" style="background:#fff3dc;color:#8a5300">
+      <i data-lucide="database" width="16" height="16"></i>
+      <span id="sheet-status">Menghubungkan Google Sheets…</span>
+    </div>
+  </div>
+</header>
+
+<main class="w-full px-4 py-7 md:px-8 lg:px-10">
+  <div class="mx-auto grid max-w-7xl gap-8 xl:grid-cols-[1.15fr_.85fr]">
+
+    <!-- ===== FORM SECTION (LAMPIRAN, pindah halaman baru saat cetak) ===== -->
+    <section aria-labelledby="form-title">
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-7">
+        <div class="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-[.15em]" style="color:#c89536">Lampiran — Formulir Evaluasi</p>
+            <h2 class="mt-1 text-2xl font-bold" style="color:#12355b">Isi Data Evaluasi Diri</h2>
+          </div>
+          <i data-lucide="file-pen-line" width="25" height="25" style="color:#1d5f93" class="print-hide"></i>
+        </div>
+
+        <form id="evadir-form">
+          <fieldset>
+            <legend class="section-rule w-full pt-4 text-base font-bold" style="color:#12355b">A. Identitas Guru</legend>
+            <div class="mt-4 grid gap-4 sm:grid-cols-2">
+              <div class="sm:col-span-2"><label class="field-label" for="nama_guru">Nama Guru</label><input class="form-field" id="nama_guru" required type="text"></div>
+              <div><label class="field-label" for="nip_guru">NIP</label><input class="form-field" id="nip_guru" required type="text" inputmode="numeric" maxlength="18"></div>
+              <div><label class="field-label" for="tanggal_evaluasi">Tanggal Evaluasi</label><input class="form-field" id="tanggal_evaluasi" required type="date"></div>
+              <div><label class="field-label" for="pangkat_golongan">Pangkat / Golongan</label><input class="form-field" id="pangkat_golongan" required type="text"></div>
+              <div><label class="field-label" for="jabatan">Jabatan</label><input class="form-field" id="jabatan" required type="text"></div>
+              <div><label class="field-label" for="mata_pelajaran">Mata Pelajaran</label><input class="form-field" id="mata_pelajaran" required type="text"></div>
+              <div><label class="field-label" for="nama_sekolah">Nama Sekolah</label><input class="form-field" id="nama_sekolah" required type="text"></div>
+              <div><label class="field-label" for="nama_kepsek">Nama Kepala Sekolah</label><input class="form-field" id="nama_kepsek" required type="text"></div>
+              <div><label class="field-label" for="nip_kepsek">NIP Kepala Sekolah</label><input class="form-field" id="nip_kepsek" required type="text" inputmode="numeric" maxlength="18"></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="mt-8">
+            <legend class="section-rule w-full pt-4 text-base font-bold" style="color:#12355b">B. Penilaian Kompetensi</legend>
+            <p class="mt-1 text-sm text-slate-600">Berikan skor 1–4 pada setiap indikator sesuai kondisi Anda.</p>
+            <div class="mt-4 grid gap-2 rounded-xl border p-4 text-sm sm:grid-cols-4" style="border-color:#cfe0ea;background:#f4f9fc">
+              <span><strong>4</strong> Sangat Baik</span>
+              <span><strong>3</strong> Baik</span>
+              <span><strong>2</strong> Cukup Baik</span>
+              <span><strong>1</strong> Kurang Baik</span>
+            </div>
+            <div id="assessment-groups" class="mt-5 space-y-7"></div>
+          </fieldset>
+
+          <section class="mt-9">
+            <h2 class="section-rule pt-4 text-base font-bold" style="color:#12355b">C. Refleksi Diri</h2>
+            <p class="mt-1 text-sm text-slate-600">Uraikan usaha, kendala, dan keberhasilan Anda.</p>
+            <div id="narrative-fields" class="mt-5 space-y-5"></div>
+          </section>
+
+          <div class="mt-8">
+            <label class="section-rule field-label pt-4" for="catatan_rekomendasi">Catatan &amp; Rekomendasi</label>
+            <textarea class="form-field min-h-28 resize-y" id="catatan_rekomendasi"></textarea>
+          </div>
+
+          <div class="mt-6 flex flex-wrap gap-3 no-print">
+            <button id="save-button" type="submit" class="inline-flex items-center gap-2 rounded-xl px-5 py-3 font-bold text-white shadow-md transition hover:-translate-y-0.5 disabled:opacity-60" style="background:#1d5f93">
+              <i data-lucide="save" width="18" height="18"></i>
+              <span>Simpan ke Google Sheets</span>
+            </button>
+            <button id="refresh-button" type="button" class="inline-flex items-center gap-2 rounded-xl border px-5 py-3 font-bold transition hover:bg-slate-50" style="border-color:#c8d5df;color:#12355b">
+              <i data-lucide="refresh-cw" width="18" height="18"></i>
+              <span>Refresh Data</span>
+            </button>
+            <button id="print-report" type="button" class="inline-flex items-center gap-2 rounded-xl border px-5 py-3 font-bold transition hover:bg-slate-50" style="border-color:#c8d5df;color:#12355b">
+              <i data-lucide="printer" width="18" height="18"></i>
+              <span>Cetak / PDF</span>
+            </button>
+          </div>
+
+          <p id="form-status" class="no-print mt-3 min-h-5 text-sm font-semibold" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+
+      <!-- SAVED LIST (tidak dicetak) -->
+      <section class="no-print mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="mb-4 flex items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-bold" style="color:#12355b">Laporan Tersimpan di Google Sheets</h2>
+            <p class="mt-1 text-sm text-slate-600">Data langsung tersimpan di spreadsheet Anda.</p>
+          </div>
+          <span id="record-count" class="rounded-full px-3 py-1 text-xs font-bold" style="background:#e4eff6;color:#12355b">0 / 999</span>
+        </div>
+        <div id="load-state" class="mb-3 text-sm text-slate-500"></div>
+        <div id="saved-list" class="space-y-3"></div>
+      </section>
+    </section>
+
+    <!-- ===== REPORT PREVIEW (RINGKASAN — halaman pertama saat cetak) ===== -->
+    <aside aria-labelledby="report-title">
+      <article class="paper-sheet mx-auto max-w-3xl overflow-hidden rounded-sm border border-slate-200">
+        <div class="h-3" style="background:#12355b"></div>
+        <div class="p-7 sm:p-10">
+          <div class="border-b-2 pb-5 text-center" style="border-color:#12355b">
+            <p id="preview-school" class="text-sm font-bold uppercase tracking-wide">NAMA SEKOLAH</p>
+            <h2 class="serif mt-3 text-2xl font-bold" style="color:#12355b">Laporan Evaluasi Diri Guru</h2>
+            <p class="mt-1 text-sm text-slate-500">Ringkasan hasil penilaian kompetensi</p>
+          </div>
+
+          <section class="mt-7">
+            <h3 class="text-sm font-bold uppercase tracking-wider" style="color:#12355b">Identitas</h3>
+            <dl class="mt-3 grid border text-sm sm:grid-cols-2" style="border-color:#d8e1e8">
+              <div class="border-b p-3 sm:border-r">
+                <dt class="text-xs text-slate-500">Nama Guru</dt>
+                <dd id="preview-nama" class="mt-1 font-bold">—</dd>
+              </div>
+              <div class="border-b p-3">
+                <dt class="text-xs text-slate-500">NIP</dt>
+                <dd id="preview-nip" class="mt-1 font-bold">—</dd>
+              </div>
+              <div class="border-b p-3 sm:border-r sm:border-b-0">
+                <dt class="text-xs text-slate-500">Jabatan / Mata Pelajaran</dt>
+                <dd id="preview-jabatan" class="mt-1 font-bold">—</dd>
+              </div>
+              <div class="p-3">
+                <dt class="text-xs text-slate-500">Tanggal Evaluasi</dt>
+                <dd id="preview-tanggal" class="mt-1 font-bold">—</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="mt-7">
+            <h3 class="text-sm font-bold uppercase tracking-wider" style="color:#12355b">Analisis Kompetensi</h3>
+            <div class="mt-3 overflow-hidden border" style="border-color:#d8e1e8">
+              <table class="w-full text-left text-sm">
+                <thead style="background:#edf3f7">
+                  <tr><th class="p-3">Kompetensi</th><th class="p-3 text-center">Skor</th></tr>
+                </thead>
+                <tbody id="preview-scores"></tbody>
+                <tfoot>
+                  <tr style="background:#12355b;color:#fff">
+                    <th class="p-3">Nilai Akhir</th>
+                    <th id="preview-total" class="p-3 text-center">0.00</th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+            <div class="mt-4 flex items-center justify-between rounded-lg border px-4 py-3" style="border-color:#c89536;background:#fff9ea">
+              <span class="text-sm font-bold">Predikat Akhir</span>
+              <strong id="preview-predikat" class="text-lg" style="color:#9a6a12">—</strong>
+            </div>
+          </section>
+
+          <section class="mt-7">
+            <h3 class="text-sm font-bold uppercase tracking-wider" style="color:#12355b">Catatan &amp; Rekomendasi</h3>
+            <p id="preview-catatan" class="mt-3 min-h-20 border-l-4 pl-4 text-sm leading-6 text-slate-700" style="border-color:#c89536">Catatan dan rekomendasi akan tampil di sini.</p>
+          </section>
+
+          <section class="mt-12 grid grid-cols-2 gap-8 text-center text-sm">
+            <div>
+              <p class="font-bold">Guru yang Dievaluasi</p>
+              <div class="h-20"></div>
+              <p id="sign-guru" class="border-b pb-1 font-bold">Nama Guru</p>
+              <p id="sign-nip-guru" class="mt-1 text-xs">NIP. —</p>
+            </div>
+            <div>
+              <p class="font-bold">Kepala Sekolah</p>
+              <div class="h-20"></div>
+              <p id="sign-kepsek" class="border-b pb-1 font-bold">Nama Kepala Sekolah</p>
+              <p id="sign-nip-kepsek" class="mt-1 text-xs">NIP. —</p>
+            </div>
+          </section>
+        </div>
+      </article>
+    </aside>
+  </div>
+</main>
+
+<script>
+const competencies=[
+  [1,"Pedagogik","Menguasai karakteristik peserta didik",["Guru mengidentifikasi karakteristik belajar setiap peserta didik.","Guru memastikan semua peserta didik mendapat kesempatan berpartisipasi aktif.","Guru mengatur kelas untuk memberi kesempatan belajar yang sama, termasuk peserta didik berkebutuhan khusus.","Guru mengetahui penyebab penyimpangan perilaku untuk mencegah kerugian peserta didik lain.","Guru membantu mengembangkan potensi dan mengatasi kekurangan peserta didik.","Guru memperhatikan peserta didik dengan kelemahan fisik agar tidak termarginalkan."]],
+  [2,"Pedagogik","Menguasai teori belajar dan prinsip pembelajaran",["Guru memberi kesempatan menguasai materi sesuai usia dan kemampuan.","Guru memastikan tingkat pemahaman dan menyesuaikan aktivitas berikutnya.","Guru menjelaskan alasan pelaksanaan kegiatan pembelajaran.","Guru menggunakan berbagai teknik untuk memotivasi belajar.","Guru merencanakan kegiatan yang saling terkait dengan tujuan belajar.","Guru menggunakan respons peserta didik untuk memperbaiki rancangan berikutnya."]],
+  [3,"Pedagogik","Pengembangan kurikulum",["Guru menyusun silabus sesuai kurikulum.","Guru merancang RPP sesuai silabus untuk mencapai kompetensi dasar.","Guru mengikuti urutan materi dengan memperhatikan tujuan.","Guru memilih materi yang tepat, mutakhir, sesuai usia, dan kontekstual."]],
+  [4,"Pedagogik","Kegiatan belajar yang mendidik",["Guru melaksanakan pembelajaran sesuai rancangan dan tujuan.","Guru melaksanakan aktivitas yang membantu proses belajar.","Guru mengomunikasikan informasi baru sesuai usia peserta didik.","Guru menyikapi kesalahan peserta didik sebagai tahapan belajar.","Guru mengaitkan pembelajaran dengan kehidupan sehari-hari.","Guru melaksanakan pembelajaran bervariasi dengan waktu cukup.","Guru mengelola kelas efektif tanpa mendominasi.","Guru menyesuaikan aktivitas dengan kondisi kelas.","Guru memberi kesempatan bertanya, mempraktikkan, dan berinteraksi.","Guru mengatur aktivitas sistematis untuk membantu proses belajar.","Guru menggunakan alat bantu mengajar termasuk TIK."]],
+  [5,"Pedagogik","Pengembangan potensi peserta didik",["Guru menganalisis hasil belajar untuk mengetahui kemajuan.","Guru merancang aktivitas sesuai kecakapan dan pola belajar.","Guru merancang aktivitas untuk kreativitas dan berpikir kritis.","Guru aktif membantu peserta didik dengan perhatian individu.","Guru mengidentifikasi bakat, minat, potensi, dan kesulitan belajar.","Guru memberi kesempatan belajar sesuai cara belajar peserta didik.","Guru memusatkan perhatian pada interaksi dan pemahaman informasi."]],
+  [6,"Pedagogik","Komunikasi dengan peserta didik",["Guru menggunakan pertanyaan untuk mengetahui pemahaman.","Guru mendengarkan pertanyaan dan tanggapan tanpa interupsi.","Guru menanggapi pertanyaan secara tepat dan tanpa mempermalukan.","Guru menyajikan pembelajaran yang menumbuhkan kerja sama.","Guru mendengarkan jawaban benar maupun salah.","Guru merespons pertanyaan secara lengkap dan relevan."]],
+  [7,"Pedagogik","Penilaian dan evaluasi",["Guru menyusun alat penilaian sesuai tujuan dan kompetensi.","Guru melaksanakan penilaian dengan berbagai teknik.","Guru menganalisis hasil penilaian untuk remedial dan pengayaan.","Guru memanfaatkan masukan peserta didik untuk perbaikan.","Guru memanfaatkan hasil penilaian untuk rancangan berikutnya."]],
+  [8,"Kepribadian","Bertindak sesuai norma dan kebudayaan nasional",["Guru menghargai dan mempromosikan prinsip Pancasila.","Guru mengembangkan kerja sama tanpa membedakan suku, agama, gender.","Guru saling menghormati sesama sejawat.","Guru memiliki rasa persatuan sebagai bangsa Indonesia.","Guru memiliki pandangan luas tentang keberagaman."]],
+  [9,"Kepribadian","Menunjukkan pribadi dewasa dan teladan",["Guru bertingkah laku sopan.","Guru mau berbagi pengalaman dan menerima masukan.","Guru dihormati peserta didik.","Guru bersikap dewasa menerima masukan.","Guru berperilaku baik untuk citra sekolah."]],
+  [10,"Kepribadian","Etos kerja dan tanggung jawab",["Guru mengawali dan mengakhiri pembelajaran tepat waktu.","Guru mengaktifkan siswa saat meninggalkan kelas.","Guru memenuhi jam mengajar sesuai izin.","Guru meminta izin lebih awal bila tidak hadir.","Guru menyelesaikan tugas administratif tepat waktu.","Guru memanfaatkan waktu luang untuk kegiatan produktif.","Guru berkontribusi terhadap pengembangan sekolah.","Guru bangga dengan profesinya."]],
+  [11,"Sosial","Bersikap inklusif, objektif, tidak diskriminatif",["Guru memperlakukan semua peserta didik adil.","Guru menjaga hubungan baik dengan sejawat.","Guru berinteraksi dengan semua peserta didik tanpa membatasi."]],
+  [12,"Sosial","Komunikasi dengan warga sekolah dan masyarakat",["Guru menyampaikan informasi kemajuan peserta didik kepada orang tua.","Guru berperan aktif dalam kegiatan sekolah dan masyarakat.","Guru berkomunikasi dengan masyarakat sekitar."]],
+  [13,"Profesional","Penguasaan materi dan pola pikir keilmuan",["Guru memetakan standar kompetensi dan kompetensi dasar.","Guru menyertakan informasi tepat dan mutakhir.","Guru menyusun materi yang membantu pemahaman konsep."]],
+  [14,"Profesional","Pengembangan keprofesionalan reflektif",["Guru melakukan evaluasi diri secara spesifik.","Guru memiliki jurnal pembelajaran sebagai bukti kinerja.","Guru memanfaatkan bukti kinerja untuk PKB.","Guru mengaplikasikan pengalaman PKB dalam pembelajaran.","Guru melakukan penelitian dan karya inovasi.","Guru memanfaatkan TIK dalam PKB."]]
+];
+
+const narratives=[
+  ["A","Pengembangan kompetensi inti",[["narasi_a1","Usaha yang telah saya lakukan untuk memenuhi dan mengembangkan kompetensi inti."],["narasi_a2","Kendala yang saya hadapi dalam mengembangkan kompetensi inti."],["narasi_a3","Keberhasilan yang saya capai setelah mengikuti pengembangan keprofesian."],["narasi_a4","Pengembangan keprofesian yang masih saya butuhkan."]]],
+  ["B","Kompetensi menghasilkan publikasi ilmiah",[["narasi_b1","Usaha yang telah saya lakukan untuk mengembangkan publikasi ilmiah."],["narasi_b2","Kendala pengembangan kompetensi publikasi ilmiah."],["narasi_b3","Keberhasilan pengembangan kompetensi publikasi ilmiah."]]],
+  ["C","Kompetensi menghasilkan karya inovatif",[["narasi_c1","Usaha yang telah saya lakukan untuk menghasilkan karya inovatif."],["narasi_c2","Kendala dalam mengembangkan karya inovatif."],["narasi_c3","Keberhasilan pengembangan karya inovatif."]]],
+  ["D","Kompetensi penunjang pembelajaran berkualitas",[["narasi_d1","Usaha mengembangkan kompetensi penunjang pembelajaran berkualitas."],["narasi_d2","Kendala mengembangkan kompetensi penunjang pembelajaran."],["narasi_d3","Keberhasilan pengembangan kompetensi penunjang pembelajaran."],["narasi_d4","Pengembangan penunjang pembelajaran yang masih dibutuhkan."]]]
+];
+
+const identityFields=["nama_guru","nip_guru","pangkat_golongan","jabatan","mata_pelajaran","nama_sekolah","nama_kepsek","nip_kepsek","tanggal_evaluasi"];
+const narrativeKeys=narratives.flatMap(x=>x[2].map(y=>y[0]));
+const domainNames=["Pedagogik","Kepribadian","Sosial","Profesional"];
+let backendRecords=[];
+let dataLoaded=false;
+
+const byId=id=>document.getElementById(id);
+const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function setStatus(message,color="#1d5f93"){
+  const el=byId("form-status");
+  el.textContent=message;
+  el.style.color=color;
+}
+
+function setSheetStatus(text,connected){
+  byId("sheet-status").textContent=text;
+  const badge=byId("sheet-badge");
+  badge.style.background=connected?"#e4eff6":"#fff3dc";
+  badge.style.color=connected?"#12355b":"#8a5300";
+}
+
+function buildAssessment(){
+  const host=byId("assessment-groups");
+  let lastGroup="";
+  competencies.forEach(([num,group,title,items])=>{
+    if(group!==lastGroup){
+      lastGroup=group;
+      host.insertAdjacentHTML("beforeend",`<div class="section-rule pt-4"><h3 class="text-lg font-bold" style="color:#12355b">${group}</h3></div>`);
+    }
+    const rows=items.map((text,i)=>`<tr class="indicator-row border-t" style="border-color:#d8e1e8"><td class="p-3 align-top text-sm leading-5"><strong>${num}.${i+1}</strong> ${text}</td><td class="p-2 text-center"><div class="score-options">${[1,2,3,4].map(v=>`<label class="score-choice"><input required type="radio" name="k${num}_${i+1}" value="${v}">${v}</label>`).join("")}</div></td></tr>`).join("");
+    host.insertAdjacentHTML("beforeend",`<section class="overflow-hidden rounded-xl border" style="border-color:#d8e1e8"><div class="flex items-center justify-between gap-3 p-4" style="background:#f4f9fc"><div><p class="text-xs font-bold uppercase tracking-wide text-slate-500">Kompetensi ${num}</p><h3 class="font-bold" style="color:#12355b">${title}</h3></div><span id="badge-k${num}" class="rounded-full px-3 py-1 text-xs font-bold" style="background:#e4eff6;color:#12355b">Skor: —</span></div><div class="overflow-x-auto"><table class="w-full min-w-[720px]"><thead><tr class="text-xs uppercase tracking-wide text-slate-500"><th class="p-3 text-left">Indikator</th><th class="p-3 text-center">1 &nbsp; 2 &nbsp; 3 &nbsp; 4</th></tr></thead><tbody>${rows}</tbody></table></div></section>`);
+  });
+}
+
+function buildNarratives(){
+  byId("narrative-fields").innerHTML=narratives.map(([letter,title,items])=>`<section class="rounded-xl border p-4" style="border-color:#d8e1e8"><h3 class="font-bold" style="color:#12355b">${letter}. ${title}</h3><div class="mt-4 space-y-4">${items.map(([id,label],i)=>`<div><label class="field-label" for="${id}">${i+1}. ${label}</label><textarea id="${id}" class="form-field min-h-24 resize-y"></textarea></div>`).join("")}</div></section>`).join("");
+}
+
+function getScore(id){
+  return Number(document.querySelector(`input[name="${id}"]:checked`)?.value||0);
+}
+
+function calculateScores(){
+  const competencyScores={};
+  competencies.forEach(([num,,,items])=>{
+    const values=items.map((_,i)=>getScore(`k${num}_${i+1}`));
+    competencyScores[num]=values.every(Boolean)?values.reduce((a,b)=>a+b,0)/values.length:0;
+  });
+  const grouped={};
+  domainNames.forEach(domain=>{
+    const total=competencies.filter(c=>c[1]===domain).length;
+    const values=competencies.filter(c=>c[1]===domain).map(c=>competencyScores[c[0]]).filter(Boolean);
+    grouped[domain]=values.length===total?values.reduce((a,b)=>a+b,0)/values.length:0;
+  });
+  const vals=Object.values(competencyScores);
+  const total=vals.every(Boolean)?vals.reduce((a,b)=>a+b,0)/vals.length:0;
+  const predicate=total>=3.26?"Sangat Baik":total>=2.51?"Baik":total>=1.76?"Cukup Baik":total>0?"Kurang Baik":"—";
+  return {competencyScores,grouped,total,predicate};
+}
+
+function formatDate(v){
+  return v?new Intl.DateTimeFormat("id-ID",{day:"2-digit",month:"long",year:"numeric"}).format(new Date(v+"T00:00:00")):"—";
+}
+
+function renderPreview(){
+  const result=calculateScores();
+  const val=id=>byId(id).value;
+  competencies.forEach(([num])=>{
+    const badge=byId(`badge-k${num}`);
+    if(badge) badge.textContent="Skor: "+(result.competencyScores[num]?result.competencyScores[num].toFixed(2):"—");
+  });
+  byId("preview-school").textContent=val("nama_sekolah")||"NAMA SEKOLAH";
+  byId("preview-nama").textContent=val("nama_guru")||"—";
+  byId("preview-nip").textContent=val("nip_guru")||"—";
+  byId("preview-jabatan").textContent=[val("jabatan"),val("mata_pelajaran")].filter(Boolean).join(" • ")||"—";
+  byId("preview-tanggal").textContent=formatDate(val("tanggal_evaluasi"));
+  byId("preview-scores").innerHTML=domainNames.map(d=>`<tr class="border-t" style="border-color:#d8e1e8"><td class="p-3">${d}</td><td class="p-3 text-center font-bold">${result.grouped[d]?result.grouped[d].toFixed(2):"—"}</td></tr>`).join("");
+  byId("preview-total").textContent=result.total.toFixed(2);
+  byId("preview-predikat").textContent=result.predicate;
+  byId("preview-catatan").textContent=val("catatan_rekomendasi")||"Catatan dan rekomendasi akan tampil di sini.";
+  byId("sign-guru").textContent=val("nama_guru")||"Nama Guru";
+  byId("sign-nip-guru").textContent="NIP. "+(val("nip_guru")||"—");
+  byId("sign-kepsek").textContent=val("nama_kepsek")||"Nama Kepala Sekolah";
+  byId("sign-nip-kepsek").textContent="NIP. "+(val("nip_kepsek")||"—");
+}
+
+function renderSaved(){
+  byId("record-count").textContent=`${backendRecords.length} / 999`;
+  const host=byId("saved-list");
+  if(!backendRecords.length){
+    host.innerHTML=`<p class="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">Belum ada laporan tersimpan di Google Sheets.</p>`;
+    return;
+  }
+  host.innerHTML=backendRecords.slice().reverse().map(r=>`
+    <article class="saved-card rounded-xl bg-white p-4" data-record-id="${escapeHtml(r.__backendId||"")}">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h3 class="font-bold">${escapeHtml(r.nama_guru||"Tanpa Nama")}</h3>
+          <p class="mt-1 text-xs text-slate-500">${escapeHtml(r.mata_pelajaran||"—")} · ${Number(r.nilai_total||0).toFixed(2)} (${escapeHtml(r.predikat_akhir||"—")})</p>
+        </div>
+        <span class="rounded-full px-2 py-1 text-xs font-bold" style="background:#e4eff6;color:#12355b">${escapeHtml(r.tanggal_evaluasi||"—")}</span>
+      </div>
+      <div class="mt-3 flex gap-2">
+        <button type="button" class="load-record rounded-lg px-3 py-2 text-xs font-bold text-white" style="background:#1d5f93">Lihat Ringkasan</button>
+        <button type="button" class="delete-record rounded-lg border border-red-200 px-3 py-2 text-xs font-bold text-red-700">Hapus</button>
+      </div>
+    </article>
+  `).join("");
+}
+
+function getRecord(id){
+  return backendRecords.find(r=>r.__backendId===id);
+}
+
+function loadSummary(r){
+  if(!r) return;
+  identityFields.forEach(id=>{
+    if(r[id]!==undefined) byId(id).value=r[id]||"";
+  });
+  byId("catatan_rekomendasi").value=r.catatan_rekomendasi||"";
+  narrativeKeys.forEach(id=>{
+    if(r[id]!==undefined) byId(id).value=r[id]||"";
+  });
+  renderPreview();
+  setStatus("Ringkasan laporan dimuat dari Google Sheets.","#1d5f93");
+}
+
+async function apiCall(action,payload){
+  const body=action==="create"
+    ? {action:"create",payload}
+    : action==="delete"
+    ? {action:"delete",recordId:payload}
+    : {action:"list"};
+
+  const response=await fetch(GOOGLE_SCRIPT_URL,{
+    method:"POST",
+    redirect:"follow",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify(body)
+  });
+  return response.json();
+}
+
+async function loadRecords(){
+  byId("load-state").textContent="Memuat data dari Google Sheets…";
+  setSheetStatus("Menghubungkan Google Sheets…",false);
+  try{
+    const result=await apiCall("list");
+    if(result.result==="success"){
+      backendRecords=result.records||[];
+      dataLoaded=true;
+      byId("load-state").innerHTML=`<span class="font-semibold" style="color:#137333">Terhubung ke Google Sheets (${backendRecords.length} laporan).</span>`;
+      setSheetStatus("Google Sheets terhubung",true);
+      renderSaved();
+    } else {
+      throw new Error(result.message||"Gagal memuat data.");
+    }
+  }catch(err){
+    dataLoaded=false;
+    byId("load-state").innerHTML=`
+      <div class="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+        <strong>Mode offline:</strong> Google Sheets tidak terhubung (${escapeHtml(err.message)}).
+        Form tetap bisa diisi dan <strong>dicetak</strong>, tapi tidak bisa menyimpan ke sheet.
+        <button id="retry-connection" type="button" class="ml-2 font-bold underline">Coba lagi</button>
+      </div>
+    `;
+    const retry=byId("retry-connection");
+    if(retry) retry.onclick=loadRecords;
+    setSheetStatus("Mode offline — sheet tidak terhubung",false);
+  }
+}
+
+async function deleteRecord(button,card){
+  const record=getRecord(card.dataset.recordId);
+  if(!record){ setStatus("Laporan tidak ditemukan.","#b42318"); return; }
+  if(button.dataset.confirm!=="yes"){
+    button.dataset.confirm="yes";
+    button.textContent="Hapus yakin?";
+    setTimeout(()=>{ if(button.dataset.confirm==="yes"){button.dataset.confirm="";button.textContent="Hapus";} },3000);
+    return;
+  }
+  button.disabled=true;
+  try{
+    const result=await apiCall("delete",record.__backendId);
+    if(result.result==="success"){
+      backendRecords=backendRecords.filter(r=>r.__backendId!==record.__backendId);
+      renderSaved();
+      setStatus("Laporan berhasil dihapus.","#137333");
+    } else {
+      setStatus("Gagal menghapus: "+(result.message||"tidak diketahui"),"#b42318");
+    }
+  }catch(err){
+    setStatus("Penghapusan gagal: "+err.message,"#b42318");
+  }finally{
+    button.disabled=false;
+  }
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  buildAssessment();
+  buildNarratives();
+  byId("tanggal_evaluasi").value=new Date().toISOString().slice(0,10);
+
+  document.querySelectorAll("input,textarea").forEach(el=>{
+    el.addEventListener("input",renderPreview);
+    el.addEventListener("change",renderPreview);
+  });
+
+  byId("evadir-form").addEventListener("submit",async e=>{
+    e.preventDefault();
+    const button=e.submitter;
+    if(!dataLoaded){ setStatus("Mode offline: tidak bisa simpan ke Google Sheets. Cek koneksi lalu klik Refresh Data.","#b42318"); return; }
+    if(backendRecords.length>=999){ setStatus("Batas maksimal 999 laporan telah tercapai.","#b42318"); return; }
+    const result=calculateScores();
+    if(Object.values(result.competencyScores).some(v=>!v)){ setStatus("Lengkapi seluruh skor indikator 1–4 terlebih dahulu.","#b42318"); return; }
+    const record={};
+    identityFields.forEach(id=>record[id]=byId(id).value.trim());
+    competencies.forEach(([num,,,items])=>items.forEach((_,i)=>record[`k${num}_${i+1}`]=getScore(`k${num}_${i+1}`)));
+    competencies.forEach(([num])=>record[`skor_k${num}`]=Number(result.competencyScores[num].toFixed(2)));
+    record.skor_pedagogik=Number(result.grouped.Pedagogik.toFixed(2));
+    record.skor_kepribadian=Number(result.grouped.Kepribadian.toFixed(2));
+    record.skor_sosial=Number(result.grouped.Sosial.toFixed(2));
+    record.skor_profesional=Number(result.grouped.Profesional.toFixed(2));
+    record.nilai_total=Number(result.total.toFixed(2));
+    record.predikat_akhir=result.predicate;
+    narrativeKeys.forEach(id=>record[id]=byId(id).value.trim());
+    record.catatan_rekomendasi=byId("catatan_rekomendasi").value.trim();
+
+    button.disabled=true;
+    try{
+      const saveResult=await apiCall("create",record);
+      if(saveResult.result==="success"){
+        setStatus("Laporan berhasil disimpan ke Google Sheets.","#137333");
+        await loadRecords();
+      } else {
+        setStatus("Penyimpanan gagal: "+(saveResult.message||"tidak diketahui"),"#b42318");
+      }
+    }catch(err){
+      setStatus("Penyimpanan gagal: "+err.message,"#b42318");
+    }finally{
+      button.disabled=false;
+    }
+  });
+
+  byId("saved-list").addEventListener("click",e=>{
+    const card=e.target.closest("[data-record-id]");
+    if(!card) return;
+    if(e.target.closest(".load-record")) loadSummary(getRecord(card.dataset.recordId));
+    if(e.target.closest(".delete-record")) deleteRecord(e.target.closest(".delete-record"),card);
+  });
+
+  byId("refresh-button").addEventListener("click",loadRecords);
+  byId("print-report").addEventListener("click",()=>window.print());
+
+  renderPreview();
+  loadRecords();
+  if(window.lucide && typeof lucide.createIcons==="function") lucide.createIcons();
+});
+</script>
+
+</body>
+</html>
